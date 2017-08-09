@@ -3,22 +3,76 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <style>
+    body {
+      font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background-color: #DCDCDC;
+      color: black;
+    }
+    div {
+      border-radius: 8px;
+      background-color: white;
+      margin: 10px;
+    }
+    .refresh {
+      text-align: right;
+      font-size: 20px;
+      text-decoration: underline;
+      color: navy;
+      cursor: pointer;
+    }
+    .username {
+      text-decoration: underline;
+      color: navy;
+      cursor: pointer;
+    }
+
+    </style>
   </head>
   <body>
+    <div class='refresh'>click here for all new tweets</div>
+    <div class='main'></div>
+
     <script>
 
       $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
+        //var $body = $('body');
+        //$body.html('');
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
+        var $refresh = $('.refresh');
+        var $main = $('.main');
+        
+
+        function updateTweet() {
+          $main.html('');
+
+          var index = streams.home.length - 1;
+          while (index >= 0) {
+            var tweet = streams.home[index];
+            var $tweet = $('<p>' + tweet.created_at.toString().substr(0,24) + ' @<span class="username">' + tweet.user + '</span>: ' + tweet.message + '</p>');
+            $tweet.appendTo($main);
+            index -= 1;
+          }
         }
+
+        updateTweet();
+
+        $refresh.on('click', updateTweet);
+
+        $main.on('click', '.username', function() {
+          $main.html('');
+
+          var username = $(this).text();
+
+          var index = streams.users[username].length - 1;
+          while (index >= 0) {
+            var tweet = streams.users[username][index];
+            var $tweet = $('<p>' + tweet.created_at.toString().substr(0,24) + ' @<span class="username">' + tweet.user + '</span>: ' + tweet.message + '</p>');
+            $tweet.appendTo($main);
+            index -= 1;
+          }
+        });
+
 
       });
 
